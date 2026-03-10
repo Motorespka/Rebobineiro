@@ -1,28 +1,21 @@
-# app.py
 import streamlit as st
 import pandas as pd
 
-# --- Configurações da página ---
-st.set_page_config(
-    page_title="Rebobineiro",
-    page_icon="🌐",
-    layout="wide"
-)
+# --- Configurações ---
+st.set_page_config(page_title="Rebobineiro", page_icon="🌐", layout="wide")
 
-# --- Chave mestre ---
 CHAVE_MESTRE = "Pablo123"
 
-# --- Inicializa estado de login ---
+# Inicializa estado de login
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-# --- Cabeçalho ---
+# Cabeçalho
 st.title("🌐 Bem-vindo ao Rebobineiro")
 st.markdown("Este site é feito de Rebobinador para Rebobinador!")
 
 # --- Sidebar: Login / Logout ---
 st.sidebar.title("Acesso")
-
 if not st.session_state.logado:
     senha = st.sidebar.text_input("Chave mestre", type="password")
     if st.sidebar.button("Entrar"):
@@ -35,66 +28,45 @@ else:
     st.sidebar.success("Você está logado como Mestre.")
     if st.sidebar.button("Sair"):
         st.session_state.logado = False
-        st.experimental_rerun()  # recarrega a página após logout
+        st.experimental_rerun()
 
 # --- Sidebar: Menu ---
 st.sidebar.title("Menu")
 
-# Consulta e páginas públicas
-page = st.sidebar.radio(
-    "",
-    ["Consultar Cálculo", "Adicionar motor", "Sobre"]
-)
+# Páginas públicas
+pagina_publica = st.sidebar.radio("", ["Consultar Cálculo", "Home", "Dados", "Sobre"])
+page = pagina_publica  # valor inicial da página
 
-# Menu Mestre só aparece se logado
-page_mestre = None
+# Páginas Mestre (só se logado)
+pagina_mestre = None
 if st.session_state.logado:
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Mestre")
-    page_mestre = st.sidebar.radio(
-        "",
-        ["Orçamento", "Cadastrar Motor", "Imagem"]
-    )
+    pagina_mestre = st.sidebar.radio("", ["Orçamento", "Cadastrar Motor", "Imagem"])
+    if pagina_mestre:
+        page = pagina_mestre
 
-# Define página ativa
-if page_mestre:
-    page = page_mestre
-
-# --- Navegação ---
-# Páginas restritas (Mestre) só acessíveis se logado
-menu_mestre_opcoes = ["Orçamento", "Cadastrar Motor", "Imagem"]
-if page in menu_mestre_opcoes and not st.session_state.logado:
+# Bloqueio de páginas Mestre se não estiver logado
+if page in ["Orçamento", "Cadastrar Motor", "Imagem"] and not st.session_state.logado:
     st.warning("🔒 Acesso restrito: faça login como Mestre para acessar esta página.")
-    st.stop()  # bloqueia conteúdo
+    st.stop()
 
 # --- Conteúdo das páginas ---
 if page == "Consultar Cálculo":
     st.header("Consultar Cálculo")
 
-elif page == "Orçamento":
-    st.header("Cadastro de Orçamento")
-
-elif page == "Cadastrar Motor":
-    st.header("Cadastro de Motor")
-
-elif page == "Imagem":
-    st.header("Cadastro de Imagem")
-
-# --- Página Consulta ---
-elif page == "Consultar Calculos":
+elif page == "Home":
     st.header("Página Inicial")
     st.write("Aqui você pode colocar informações sobre seu site, projetos ou serviços.")
     st.image("https://via.placeholder.com/600x200.png?text=Imagem+de+Cabeçalho", width=600)
 
-# --- Página Criar calculo ---
-elif page == "Adicionar Motor":
+elif page == "Dados":
     st.header("Visualização de Dados")
-    data = {
+    df = pd.DataFrame({
         "Nome": ["Alice", "Bob", "Carlos", "Diana"],
         "Idade": [25, 30, 22, 28],
         "Cidade": ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Curitiba"]
-    }
-    df = pd.DataFrame(data)
+    })
     st.dataframe(df)
     st.download_button(
         label="Baixar dados",
@@ -103,7 +75,6 @@ elif page == "Adicionar Motor":
         mime='text/csv'
     )
 
-# --- Página Sobre ---
 elif page == "Sobre":
     st.header("Sobre Este Site")
     st.markdown("""
@@ -112,5 +83,12 @@ elif page == "Sobre":
     - Menu Mestre protegido com opção de logout
     """)
 
+# --- Páginas Mestre ---
+elif page == "Orçamento":
+    st.header("Cadastro de Orçamento")
 
+elif page == "Cadastrar Motor":
+    st.header("Cadastro de Motor")
 
+elif page == "Imagem":
+    st.header("Cadastro de Imagem")
