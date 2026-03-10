@@ -43,7 +43,7 @@ st.sidebar.title("Menu")
 # Consulta e páginas públicas
 page = st.sidebar.radio(
     "",
-    ["Consultar Cálculo", "Home", "Dados", "Sobre"]
+    ["Consultar Cálculo", "Consultar calculo", "Adicionar motor", "Sobre"]
 )
 
 # Menu Mestre só aparece se logado
@@ -111,4 +111,5 @@ elif page == "Sobre":
     - Login Mestre permanente na sessão
     - Menu Mestre protegido com opção de logout
     """)
+
 
