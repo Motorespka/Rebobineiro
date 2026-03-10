@@ -1,21 +1,28 @@
+# app.py
 import streamlit as st
 import pandas as pd
 
-# --- Configurações ---
-st.set_page_config(page_title="Rebobineiro", page_icon="🌐", layout="wide")
+# --- Configurações da página ---
+st.set_page_config(
+    page_title="Rebobineiro",
+    page_icon="🌐",
+    layout="wide"
+)
 
+# --- Chave mestre ---
 CHAVE_MESTRE = "Pablo123"
 
-# Inicializa estado de login
+# --- Inicializa estado de login ---
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-# Cabeçalho
+# --- Cabeçalho ---
 st.title("🌐 Bem-vindo ao Rebobineiro")
 st.markdown("Este site é feito de Rebobinador para Rebobinador!")
 
 # --- Sidebar: Login / Logout ---
 st.sidebar.title("Acesso")
+
 if not st.session_state.logado:
     senha = st.sidebar.text_input("Chave mestre", type="password")
     if st.sidebar.button("Entrar"):
@@ -28,7 +35,7 @@ else:
     st.sidebar.success("Você está logado como Mestre.")
     if st.sidebar.button("Sair"):
         st.session_state.logado = False
-        st.experimental_rerun()
+        st.experimental_rerun()  # recarrega a página após logout
 
 # --- Sidebar: Menu ---
 st.sidebar.title("Menu")
@@ -47,7 +54,8 @@ if st.session_state.logado:
         page = pagina_mestre
 
 # Bloqueio de páginas Mestre se não estiver logado
-if page in ["Orçamento", "Cadastrar Motor", "Imagem"] and not st.session_state.logado:
+menu_mestre_opcoes = ["Orçamento", "Cadastrar Motor", "Imagem"]
+if page in menu_mestre_opcoes and not st.session_state.logado:
     st.warning("🔒 Acesso restrito: faça login como Mestre para acessar esta página.")
     st.stop()
 
