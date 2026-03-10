@@ -2,70 +2,75 @@
 import streamlit as st
 import pandas as pd
 
-page_mestre = None
-CHAVE_MESTRE = "Pablo123"
-
-if "logado" not in st.session_state:
-    st.session_state.logado = False
-
 # --- Configurações da página ---
 st.set_page_config(
     page_title="Rebobineiro",
     page_icon="🌐",
     layout="wide"
 )
-st.sidebar.title("Acesso")
+
+# --- Chave mestre ---
+CHAVE_MESTRE = "Pablo123"
+
+# --- Inicializa estado de login ---
+if "logado" not in st.session_state:
+    st.session_state.logado = False
+
 # --- Cabeçalho ---
 st.title("🌐 Bem-vindo ao Rebobineiro")
 st.markdown("Este site é feito de Rebobinador para Rebobinador!")
-                 
+
+# --- Sidebar: Login ---
+st.sidebar.title("Acesso")
+
 senha = st.sidebar.text_input("Chave mestre", type="password")
 
 if st.sidebar.button("Entrar"):
     if senha == CHAVE_MESTRE:
         st.session_state.logado = True
-        st.sidebar.success("Acesso liberado")
-else:
-    st.sidebar.error("Chave incorreta")
-    st.sidebar.markdown("---")
+        st.sidebar.success("Chave correta! Acesso liberado.")
+    else:
+        st.sidebar.error("Chave incorreta!")
 
-# --- Menu lateral ---
+# --- Logout ---
+if st.session_state.logado:
+    if st.sidebar.button("Sair"):
+        st.session_state.logado = False
+        st.sidebar.info("Você saiu da conta.")
+
+# --- Sidebar: Menu ---
 st.sidebar.title("Menu")
 
+# Consulta sempre disponível
 st.sidebar.markdown("### Consulta")
-page = st.sidebar.radio(
-    "",
-    ["Consultar Cálculo"]
-)
+page = st.sidebar.radio("", ["Consultar Cálculo", "Home", "Dados", "Sobre"])
 
+# Menu Mestre aparece apenas se logado
+page_mestre = None
 if st.session_state.logado:
-
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Mestre")
-
-    page_mestre = st.sidebar.radio(
-    "",
-    ["Orçamento", "Cadastrar Motor", "Imagem"]
-)
-
-# define qual página está ativa
-if page_mestre: page = page_mestre
+    page_mestre = st.sidebar.radio("", ["Orçamento", "Cadastrar Motor", "Imagem"])
     
+# Define página ativa
+if page_mestre:
+    page = page_mestre
+
 # --- Navegação ---
 if page == "Consultar Cálculo":
     st.header("Consultar Cálculo")
 
 elif page == "Orçamento":
-    st.header("Orçamento")
+    st.header("Cadastro de Orçamento")
 
 elif page == "Cadastrar Motor":
-    st.header("Cadastrar Motor")
+    st.header("Cadastro de Motor")
 
 elif page == "Imagem":
-    st.header("Imagem")
+    st.header("Cadastro de Imagem")
 
 # --- Página Home ---
-if page == "Home":
+elif page == "Home":
     st.header("Página Inicial")
     st.write("Aqui você pode colocar informações sobre seu site, projetos ou serviços.")
     st.image("https://via.placeholder.com/600x200.png?text=Imagem+de+Cabeçalho", width=600)
