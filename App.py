@@ -80,14 +80,14 @@ elif page == "Cadastrar Motor":
 elif page == "Imagem":
     st.header("Cadastro de Imagem")
 
-# --- Página Home ---
-elif page == "Home":
+# --- Página Consulta ---
+elif page == "Consultar Calculos":
     st.header("Página Inicial")
     st.write("Aqui você pode colocar informações sobre seu site, projetos ou serviços.")
     st.image("https://via.placeholder.com/600x200.png?text=Imagem+de+Cabeçalho", width=600)
 
-# --- Página Dados ---
-elif page == "Dados":
+# --- Página Criar calculo ---
+elif page == "Adicionar Motor":
     st.header("Visualização de Dados")
     data = {
         "Nome": ["Alice", "Bob", "Carlos", "Diana"],
@@ -111,3 +111,4 @@ elif page == "Sobre":
     - Login Mestre permanente na sessão
     - Menu Mestre protegido com opção de logout
     """)
+
