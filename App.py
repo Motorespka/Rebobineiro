@@ -20,43 +20,54 @@ if "logado" not in st.session_state:
 st.title("🌐 Bem-vindo ao Rebobineiro")
 st.markdown("Este site é feito de Rebobinador para Rebobinador!")
 
-# --- Sidebar: Login ---
+# --- Sidebar: Login / Logout ---
 st.sidebar.title("Acesso")
 
-senha = st.sidebar.text_input("Chave mestre", type="password")
-
-if st.sidebar.button("Entrar"):
-    if senha == CHAVE_MESTRE:
-        st.session_state.logado = True
-        st.sidebar.success("Chave correta! Acesso liberado.")
-    else:
-        st.sidebar.error("Chave incorreta!")
-
-# --- Logout ---
-if st.session_state.logado:
+if not st.session_state.logado:
+    senha = st.sidebar.text_input("Chave mestre", type="password")
+    if st.sidebar.button("Entrar"):
+        if senha == CHAVE_MESTRE:
+            st.session_state.logado = True
+            st.sidebar.success("Chave correta! Acesso liberado.")
+        else:
+            st.sidebar.error("Chave incorreta!")
+else:
+    st.sidebar.success("Você está logado como Mestre.")
     if st.sidebar.button("Sair"):
         st.session_state.logado = False
-        st.sidebar.info("Você saiu da conta.")
+        st.experimental_rerun()  # recarrega a página após logout
 
 # --- Sidebar: Menu ---
 st.sidebar.title("Menu")
 
-# Consulta sempre disponível
-st.sidebar.markdown("### Consulta")
-page = st.sidebar.radio("", ["Consultar Cálculo", "Home", "Dados", "Sobre"])
+# Consulta e páginas públicas
+page = st.sidebar.radio(
+    "",
+    ["Consultar Cálculo", "Home", "Dados", "Sobre"]
+)
 
-# Menu Mestre aparece apenas se logado
+# Menu Mestre só aparece se logado
 page_mestre = None
 if st.session_state.logado:
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Mestre")
-    page_mestre = st.sidebar.radio("", ["Orçamento", "Cadastrar Motor", "Imagem"])
-    
+    page_mestre = st.sidebar.radio(
+        "",
+        ["Orçamento", "Cadastrar Motor", "Imagem"]
+    )
+
 # Define página ativa
 if page_mestre:
     page = page_mestre
 
 # --- Navegação ---
+# Páginas restritas (Mestre) só acessíveis se logado
+menu_mestre_opcoes = ["Orçamento", "Cadastrar Motor", "Imagem"]
+if page in menu_mestre_opcoes and not st.session_state.logado:
+    st.warning("🔒 Acesso restrito: faça login como Mestre para acessar esta página.")
+    st.stop()  # bloqueia conteúdo
+
+# --- Conteúdo das páginas ---
 if page == "Consultar Cálculo":
     st.header("Consultar Cálculo")
 
@@ -78,7 +89,6 @@ elif page == "Home":
 # --- Página Dados ---
 elif page == "Dados":
     st.header("Visualização de Dados")
-    # Exemplo de DataFrame
     data = {
         "Nome": ["Alice", "Bob", "Carlos", "Diana"],
         "Idade": [25, 30, 22, 28],
@@ -86,7 +96,6 @@ elif page == "Dados":
     }
     df = pd.DataFrame(data)
     st.dataframe(df)
-    
     st.download_button(
         label="Baixar dados",
         data=df.to_csv(index=False).encode('utf-8'),
@@ -99,6 +108,6 @@ elif page == "Sobre":
     st.header("Sobre Este Site")
     st.markdown("""
     - Criado com [Streamlit](https://streamlit.io/)
-    - Modelo básico atualizado sem bibliotecas extras
-    - Ideal para dashboards, portfólios ou projetos de dados
+    - Login Mestre permanente na sessão
+    - Menu Mestre protegido com opção de logout
     """)
